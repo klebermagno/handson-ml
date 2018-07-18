@@ -1,4 +1,4 @@
-FROM continuumio/anaconda3
+FROM continuumio/anaconda3:5.1.0
 
 RUN apt-get update && apt-get upgrade -y \
     && apt-get install -y \
@@ -9,12 +9,20 @@ RUN apt-get update && apt-get upgrade -y \
         cmake zlib1g-dev libjpeg-dev xvfb libav-tools xorg-dev libboost-all-dev libsdl2-dev swig \
     && rm -rf /var/lib/apt/lists/*
 
+
+RUN conda config --append channels conda-forge
 RUN conda update -n base conda
-RUN conda install -y -c conda-forge \
-        tensorflow \
-        jupyter_contrib_nbextensions \
-        pyopengl
+#RUN conda install -y  conda-forge 
+RUN conda install -y         tensorflow 
+RUN conda install -y         jupyter_contrib_nbextensions 
+RUN conda install -y         pyopengl
+#RUN conda install -y -c conda-forge \
+#        tensorflow \
+#        jupyter_contrib_nbextensions \
+#        pyopengl
+
 RUN pip install "gym[atari,box2d,classic_control]"
+RUN pip install bottle
 
 ARG username
 ARG userid
@@ -31,6 +39,11 @@ RUN chown ${username}:${username} ${workdir}
 
 USER ${username}
 
+RUN mkdir -p  ~/.vim/pack/foo/start && cd  ~/.vim/pack/foo/start \
+	&& git clone https://github.com/python-mode/python-mode.git \
+	&& cd python-mode \
+	&& git submodule update --init --recursive
+ 
 RUN jupyter contrib nbextension install --user
 RUN jupyter nbextension enable toc2/main
 
@@ -44,7 +57,8 @@ RUN jupyter nbextension enable toc2/main
 #       to get nbdiff between checkpointed version and current version of the given notebook
 USER root
 WORKDIR /
-RUN conda install -y -c conda-forge nbdime
+#RUN conda install -y -c conda-forge 
+RUN conda install -y  nbdime
 USER ${username}
 WORKDIR ${workdir}
 
@@ -65,6 +79,7 @@ RUN patch -d /opt/conda/lib/python3.6/site-packages -p1 --forward --reject-file=
     && patch -d /opt/conda/lib/python3.6/site-packages -p1 --forward --reject-file=- < \
         /tmp/nbdime-2-toc.patch || true
 RUN rm /tmp/nbdime-*.patch
+RUN apt-get update && apt-get install -y vim exuberant-ctags  ack-grep vim-nox
 USER ${username}
 WORKDIR ${workdir}
 
@@ -74,6 +89,7 @@ RUN cat /tmp/bashrc.bash >> ${home}/.bashrc
 RUN echo "export PATH=\"${workdir}/docker/bin:$PATH\"" >> ${home}/.bashrc
 RUN sudo rm /tmp/bashrc.bash
 
+RUN export DISPLAY="docker.for.mac.localhost:0"
 
 # INFO: Uncomment lines below to enable automatic save of python-only and html-only
 #       exports alongside the notebook
@@ -92,6 +108,6 @@ RUN sudo rm /tmp/bashrc.bash
 #          from notebook.auth import passwd
 #          passwd()
 #       and take the hash from the output
-#RUN mkdir -p ${home}/.jupyter && \
-#    echo 'c.NotebookApp.password = u"sha1:c6bbcba2d04b:f969e403db876dcfbe26f47affe41909bd53392e"' \
-#    >> ${home}/.jupyter/jupyter_notebook_config.py
+RUN mkdir -p ${home}/.jupyter && \
+    echo 'c.NotebookApp.password = u"sha1:c6bbcba2d04b:f969e403db876dcfbe26f47affe41909bd53392e"' \
+    >> ${home}/.jupyter/jupyter_notebook_config.py
