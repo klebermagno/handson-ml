@@ -1,13 +1,50 @@
-*.bak
-*.ckpt
-*.pyc
+### Java ###
+# Compiled class file
+*.class
+/upload-dir/
+.idea/
+.ipynb_checkpoints/
+
+# Log file
+*.log
+*.png
+*.jpg
+*.jpeg
+*.pdf
+
+# Eclipse
+.project
+.settings/
+.classpath
+
+/.gradle/
+/bin/
+/build/
+
+# Intellij
+.idea/
+*.iml
+*.iws
+
+# Mac
 .DS_Store
-.ipynb_checkpoints
-checkpoint
-logs/*
-tf_logs/*
-images/**/*.png
-my_*
-datasets/words
-datasets/flowers
-datasets/spam
+
+# Maven
+log/
+target/
+/target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+
+# Avoid ignoring Maven wrapper jar file (.jar files are usually ignored)
+!/.mvn/wrapper/maven-wrapper.jar
+
+
+
+# MariaDB
+mariadb/
