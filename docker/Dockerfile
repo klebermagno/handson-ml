@@ -1,4 +1,4 @@
-FROM continuumio/anaconda3:5.1.0
+FROM continuumio/anaconda3:5.2.0
 
 RUN apt-get update && apt-get upgrade -y \
     && apt-get install -y \
