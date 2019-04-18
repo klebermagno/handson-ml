@@ -24,13 +24,13 @@ RUN conda install -y         pyopengl
 RUN pip install "gym[atari,box2d,classic_control]"
 RUN pip install bottle
 
-ARG username
-ARG userid
+ENV username devel
+ENV userid 1000
 
 ARG home=/home/${username}
 ARG workdir=${home}/handson-ml
 
-RUN adduser ${username} --uid ${userid} --gecos '' --disabled-password \
+RUN adduser devel --uid 1000 --gecos '' --disabled-password \
     && echo "${username} ALL=(root) NOPASSWD:ALL" > /etc/sudoers.d/${username} \
     && chmod 0440 /etc/sudoers.d/${username}
 
@@ -71,23 +71,23 @@ RUN git config --global diff.jupyternotebook.command 'git-nbdiffdriver diff --ig
 
 
 # INFO: Dirty nbdime patching (ignored if not matching)
-COPY docker/nbdime-*.patch /tmp/
+#COPY docker/nbdime-*.patch /tmp/
 USER root
 WORKDIR /
 RUN patch -d /opt/conda/lib/python3.6/site-packages -p1 --forward --reject-file=- < \
         /tmp/nbdime-1-details.patch || true \
     && patch -d /opt/conda/lib/python3.6/site-packages -p1 --forward --reject-file=- < \
         /tmp/nbdime-2-toc.patch || true
-RUN rm /tmp/nbdime-*.patch
+#RUN rm /tmp/nbdime-*.patch
 RUN apt-get update && apt-get install -y vim exuberant-ctags  ack-grep vim-nox
 USER ${username}
 WORKDIR ${workdir}
 
 
-COPY docker/bashrc.bash /tmp/
-RUN cat /tmp/bashrc.bash >> ${home}/.bashrc
+#COPY docker/bashrc.bash /tmp/
+#RUN cat /tmp/bashrc.bash >> ${home}/.bashrc
 RUN echo "export PATH=\"${workdir}/docker/bin:$PATH\"" >> ${home}/.bashrc
-RUN sudo rm /tmp/bashrc.bash
+#RUN sudo rm /tmp/bashrc.bash
 
 RUN export DISPLAY="docker.for.mac.localhost:0"
 

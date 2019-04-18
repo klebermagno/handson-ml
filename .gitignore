@@ -5,6 +5,9 @@
 .idea/
 .ipynb_checkpoints/
 
+tf_logs/*
+checkpoint
+
 # Log file
 *.log
 *.png
